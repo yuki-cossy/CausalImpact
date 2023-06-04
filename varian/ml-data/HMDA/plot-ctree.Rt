@@ -1,0 +1,38 @@
+> ###################################################
+> # R code for "Big Data: New Tricks for Econometrics
+> # Journal of Economic Perspectives 28(2), 3-28            
+> # http://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.28.2.3
+> # Hal R. Varian
+> ###################################################
+> 
+> library(Ecdat)
+
+Attaching package: ‘Ecdat’
+
+The following object is masked from ‘package:datasets’:
+
+    Orange
+> library(party)
+> data(Hdma)
+> 
+> # fix annoying spelling error
+> names(Hdma)[11] <- "condo"
+> 
+> ################################
+> # all
+> ################################
+> all <- Hdma[complete.cases(Hdma),]
+> all.fit <- ctree(deny ~ .,data=all)
+> # Figure 5 in paper
+> pdf("all.pdf",height=8,width=16)
+> plot(all.fit)
+> graphics.off()
+> 
+> pdf("small.pdf")
+> plot(small.fit)
+> graphics.off()
+> # small version of plot in case it is needed
+> small.dat <- with(all,data.frame(deny,dmi,black))
+> small.fit <- ctree(deny ~ .,data=small.dat)
+> plot(small.fit)
+> 

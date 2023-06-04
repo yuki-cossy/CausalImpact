@@ -1,0 +1,23 @@
+Here are directories containing the R code for all the examples cited
+in the paper.  The code is provided in R-transcript form (.Rt) and
+plain R form (.R).  The R-transcript form contains the output as well
+as the input; the plain R form only contains inputs.
+
+The code makes use of the following packages which have to be
+installed prior to running the examples.
+
+install.packages(lars)
+install.packages(randomForest)
+install.packages(Ecdat)
+install.packages(party)
+install.packages(rpart)
+install.packages(rpart.plot)
+install.packages(gplots)
+install.packages(glmnet)
+install.packages(binom)
+install.packages(zoo)
+install.packages(binom)
+
+
+
+

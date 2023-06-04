@@ -1,0 +1,83 @@
+> ###################################################
+> # R code for "Big Data: New Tricks for Econometrics
+> # Journal of Economic Perspectives 28(2), 3-28            
+> # http://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.28.2.3
+> # Hal R. Varian
+> ###################################################
+> 
+> dat <- read.csv("titanic3.csv")
+> mydat <- na.omit(with(dat,data.frame(survived,age)))
+> library(rpart)
+> 
+> # fit very simple tree model
+> model.rpart <- rpart(survived ~ age, data=mydat)
+> model.rpart
+n= 1046 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+1) root 1046 252.68930 0.4082218  
+  2) age>=8.5 974 231.96410 0.3911704 *
+  3) age< 8.5 72  16.61111 0.6388889 *
+> 
+> # fit very simple logit model
+> model.logit <- glm(survived ~ age, data=mydat)
+> summary(model.logit)
+
+Call:
+glm(formula = survived ~ age, data = mydat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.4642  -0.4156  -0.3796   0.5806   0.6867  
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.464813   0.034973  13.291   <2e-16 ***
+age         -0.001894   0.001054  -1.796   0.0727 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for gaussian family taken to be 0.2412937)
+
+    Null deviance: 252.69  on 1045  degrees of freedom
+Residual deviance: 251.91  on 1044  degrees of freedom
+AIC: 1485.3
+
+Number of Fisher Scoring iterations: 2
+
+> # compute confidence intervals and plot them
+> attach(mydat)
+> age.bins <- cut(age,seq(0,80,10))
+> num.in.bin <- tapply(survived,age.bins,length)
+> num.survived <- tapply(survived,age.bins,sum)
+> frac.survived <- tapply(survived,age.bins,mean)
+> 
+> # confidence intervals
+> library(binom)
+> temp <- binom.confint(num.survived, num.in.bin,methods="wilson")
+> temp
+  method   x   n      mean      lower     upper
+1 wilson  50  86 0.5813953 0.47584456 0.6799855
+2 wilson  64 162 0.3950617 0.32304992 0.4719350
+3 wilson 134 361 0.3711911 0.32295481 0.4221399
+4 wilson  89 210 0.4238095 0.35893167 0.4914248
+5 wilson  52 132 0.3939394 0.31471559 0.4791618
+6 wilson  30  62 0.4838710 0.36409860 0.6055254
+7 wilson   6  27 0.2222222 0.10607239 0.4075693
+8 wilson   2   6 0.3333333 0.09677141 0.7000067
+> ymean <- temp[,4]
+> ymin <- temp[,5]
+> ymax <- temp[,6]
+> 
+> # library for misc plots
+> library(gplots)
+> 
+> plotCI(x=seq(10,80,10),y=ymean,ui=ymax,li=ymin,col="black",barcol="blue",xlab="age bin",ylab="fraction survived",cex.axis=1.5,cex.lab=1.5)
+> 
+> # generate Figure 3 in paper
+> pdf("survival-by-age.pdf")
+> plotCI(x=seq(10,80,10),y=ymean,ui=ymax,li=ymin,col="black",barcol="blue",xlab="age bin",ylab="fraction survived",cex.axis=1.5,cex.lab=1.5)
+> graphics.off()
+> 
